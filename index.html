@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Lyrics Card Maker</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: white; padding: 20px; }
+    #results div { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; }
+    #card { margin-top: 20px; background: #e74c3c; padding: 40px; border-radius: 20px; width: 300px; }
+  </style>
+</head>
+<body>
+  <h2>Lyrics Card Maker</h2>
+  <input id="search" placeholder="ابحث عن أغنية" style="width:200px;padding:5px">
+  <button onclick="doSearch()">بحث</button>
+  <div id="results"></div>
+
+  <div id="lyrics" style="white-space:pre-line; margin-top:20px;"></div>
+
+  <div id="card"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    async function doSearch(){
+      const q = document.getElementById('search').value;
+      const res = await fetch('/search?q=' + encodeURIComponent(q));
+      const data = await res.json();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      data.forEach(hit => {
+        const d = document.createElement('div');
+        d.innerText = hit.result.full_title;
+        d.onclick = ()=>loadLyrics(hit.result.url);
+        resultsDiv.appendChild(d);
+      });
+    }
+    async function loadLyrics(url){
+      const res = await fetch('/lyrics?url=' + encodeURIComponent(url));
+      const data = await res.json();
+      document.getElementById('lyrics').innerText = data.lyrics;
+      makeCard(data.lyrics.split('\n').slice(0,4).join('\n'));
+    }
+    function makeCard(text){
+      const card = document.getElementById('card');
+      card.innerText = text;
+      html2canvas(card).then(canvas=>{
+        const link = document.createElement('a');
+        link.download = 'lyrics-card.png';
+        link.href = canvas.toDataURL();
+        link.innerText = 'تحميل الصورة';
+        card.appendChild(document.createElement('br'));
+        card.appendChild(link);
+      });
+    }
+  </script>
+</body>
+</html>

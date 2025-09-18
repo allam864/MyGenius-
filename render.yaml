@@ -1,0 +1,18 @@
+services:
+- type: web
+  name: genius-lyrics-card
+  env: node
+  plan: free
+  buildCommand: "npm install"
+  startCommand: "npm start"
+  envVars:
+  - key: CLIENT_ID
+    sync: false
+  - key: CLIENT_SECRET
+    sync: false
+  - key: GENIUS_ACCESS_TOKEN
+    sync: false
+  - key: REDIRECT_URI
+    value: https://genius-lyrics-card.onrender.com/callback
+  - key: PORT
+    value: 3000
