@@ -1,21 +1,19 @@
 import express from "express";
 import dotenv from "dotenv";
-import fetch from "node-fetch";
-import * as cheerio from "cheerio";
 
 dotenv.config();
+
 const app = express();
-app.use(express.static("public"));
 
-app.get("/search", async (req, res) => {
-  const q = req.query.q;
-  if (!q) return res.json({ hits: [] });
+app.get("/", (req, res) => {
+  res.send("✅ Server is working fine!");
+});
 
-  const response = await fetch(`https://api.genius.com/search?q=${encodeURIComponent(q)}`, {
-    headers: { Authorization: `Bearer ${process.env.GENIUS_ACCESS_TOKEN}` }
-  });
-  const data = await response.json();
-  res.json(data.response.hits);
+// أهم حاجة هنا 👇
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(🚀 Server running on port ${PORT});
 });
 
 // Scraping lyrics endpoint
